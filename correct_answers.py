@@ -262,7 +262,7 @@ import random
 correct_answers = 0
 
 keywords =  ['if', 'for', 'while']
-variables = ['x', 'y', 'z', 'tmp', 'count']
+variables = ['x', 'y', 'z', 'tmp', 'count', 'flag']
 math_operations = ['+', '-']
 math_comparisions = ['<', '>', '==', '!=']
 logic_operations = ['AND', 'OR', 'NOT']
@@ -281,11 +281,13 @@ def create_problem(num_var, branch_list, embed, math_op, math_comp, logic_op):
         #print(var_list[val] + ' = ' + str(val_list[val]))
         program += var_list[val] + ' = ' + str(val_list[val]) + '\n'
 
-    '''
-    - varaible or constant
-    '''
+    if 'elif' in branch_list:
+        if(random.randint(0, 9) > 3):
+            branch_list.remove('elif')
+    if 'else' in branch_list and 'elif' not in branch_list and random.randint(0, 9) > 3:
+        branch_list.remove('else')
 
-    for keyword in branch_list:
+    for keyword in branch_list: 
         line = ''
         line += keyword 
         if keyword == 'if' or keyword == 'elif':
@@ -295,27 +297,39 @@ def create_problem(num_var, branch_list, embed, math_op, math_comp, logic_op):
             else:
                 #constant
                 line += ' ' + str(random.randint(0, 9)) + ' ' + random.choice(math_comp) + ' ' + random.choice(var_list)
+
+            if(random.randint(0, 9) > 4):
+                line += ' ' + random.choice(logic_op)
+                if(random.randint(0, 9) > 2):
+                    #variable
+                    line += ' ' + random.choice(var_list) + ' ' + random.choice(math_comp) + ' ' + str(random.randint(0, 9))
+                else:
+                    #constant
+                    line += ' ' + str(random.randint(0, 9)) + ' ' + random.choice(math_comp) + ' ' + random.choice(var_list)
+            
         line += ':'
         #print(line)
         program += line + '\n'
         #print('    ' + random.choice(var_list) + ' = ' + str(random.randint(0, 9)))
-        program += '    ' + random.choice(var_list) + ' = ' + str(random.randint(0, 9)) + '\n'
-    
+        program += '    ' + random.choice(var_list) + ' = ' + str(random.randint(0, 9)) 
+        
+        if(random.randint(0, 9) > 4):
+            program += ' ' + random.choice(math_op) + ' ' + random.choice(var_list) + '\n'
+        else:
+            program += '\n'
+
     line = 'print('
-    line_1 = 'result = ['
+    line_1 = 'result = {'
 
     for var in set(var_list):
         line += var + ', '
-        line_1 += var + ', '
+        line_1 += "('" + var +"', " + var + ')'+ ', '
 
     line = line[:-2] + ')'
-    line_1 = line_1[:-2] + ']'
+    line_1 = line_1[:-2] + '}'
 
-    program += line + '\n'
+    #program += line + '\n'
     print(program)
-
-    answer = input('what is the output of the program?')
-    print(answer)
 
     program += 'global result\n'
     program += line_1 + '\n'
@@ -325,19 +339,22 @@ def create_problem(num_var, branch_list, embed, math_op, math_comp, logic_op):
     global result
     exec(program)
 
-    if(answer == result):
+    return result
+
+
+
+
+result = create_problem(random.randint(2, 5), ['if','elif', 'else'], False, ['+', '-'], ['<', '>', '==', '!='], ['and', 'or'])
+'''
+for var, val in result:
+    #print(var, val)
+    answer = input('what is the value of ' + var + '?\n')
+    if(int(answer) == val):
         print('correct')
-    print(result)
+    else:
+        print('inncorrect (ans: ' + str(val) + ')')
+'''
 
-    answer = answer.split(' ')
-    print(answer)
-
-    if(answer == result):
-        print('correct')
-
-
-
-create_problem(3, ['if','else'], False, ['+', '-'], ['<', '>', '==', '!='], ['AND', 'OR', 'NOT'])
 '''
 #level one just two variables
 while correct_answers < 2:
