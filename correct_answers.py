@@ -302,26 +302,40 @@ def create_problem(num_var, branch_list, embed, math_op, math_comp, logic_op):
         program += '    ' + random.choice(var_list) + ' = ' + str(random.randint(0, 9)) + '\n'
     
     line = 'print('
+    line_1 = 'result = ['
+
     for var in set(var_list):
         line += var + ', '
+        line_1 += var + ', '
+
     line = line[:-2] + ')'
+    line_1 = line_1[:-2] + ']'
+
     program += line + '\n'
     print(program)
+
+    answer = input('what is the output of the program?')
+    print(answer)
 
     program += 'global result\n'
-
-    line = 'result = ['
-    for var in set(var_list):
-        line += var + ', '
-    line = line[:-2] + ']'
-    program += line + '\n'
+    program += line_1 + '\n'
 
     #print(line)
-    print(program)
+    #print(program)
     global result
     exec(program)
+
+    if(answer == result):
+        print('correct')
     print(result)
-    
+
+    answer = answer.split(' ')
+    print(answer)
+
+    if(answer == result):
+        print('correct')
+
+
 
 create_problem(3, ['if','else'], False, ['+', '-'], ['<', '>', '==', '!='], ['AND', 'OR', 'NOT'])
 '''
