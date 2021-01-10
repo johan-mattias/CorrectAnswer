@@ -262,7 +262,7 @@ import random
 correct_answers = 0
 
 keywords =  ['if', 'for', 'while']
-variables = ['x', 'y', 'z', 'tmp', 'count', 'flag']
+variables = ['x', 'y', 'z', 'tmp', 'count']
 math_operations = ['+', '-']
 math_comparisions = ['<', '>', '==', '!=']
 logic_operations = ['AND', 'OR', 'NOT']
@@ -290,28 +290,58 @@ def filter_branch_list(branch_list):
         branch_list.remove('else')
     return branch_list
 
+def make_loop_condition(var_list, math_comp, logic_op):
+    line = []
+    var = 'flag'
+    op = random.choice(math_comp)
+    val = random.randint(0, 9)
+    if(random.randint(0, 9) > 2):
+        #variable
+        line.append(var + ' ' + op + ' ' + str(val))
+    else:
+        #constant
+        line.append(str(val) + ' ' + op + ' ' + var)
+
+    if(op == '=='):
+        line.append(var + ' = ' + str(val-1) + ' \n')
+    elif(op == '!='):
+        line.append(var + ' = ' + str(val)+ ' \n')
+    elif(op == '<'):
+        line.append(var + ' += 1'+ ' \n')
+    elif(op == '>'):
+        line.append(var + ' -= 1'+ ' \n')
+    else:
+        pass
+
+    return line
+
+
+def make_condition(var_list, math_comp, logic_op):
+    line = ''
+    if(random.randint(0, 9) > 2):
+        #variable
+        line += random.choice(var_list) + ' ' + random.choice(math_comp) + ' ' + str(random.randint(0, 9))
+    else:
+        #constant
+        line += str(random.randint(0, 9)) + ' ' + random.choice(math_comp) + ' ' + random.choice(var_list)
+
+    if(random.randint(0, 9) > 4):
+        line += ' ' + random.choice(logic_op)
+        if(random.randint(0, 9) > 2):
+            #variable
+            line += ' ' + random.choice(var_list) + ' ' + random.choice(math_comp) + ' ' + str(random.randint(0, 9))
+        else:
+            #constant
+            line += ' ' + str(random.randint(0, 9)) + ' ' + random.choice(math_comp) + ' ' + random.choice(var_list)
+    return line
 
 def comp_if(branch_list, var_list, math_comp, logic_op):
     if_statements = []
     for keyword in branch_list:
         line = ''
-        line += keyword 
+        line += keyword + ' '
         if keyword == 'if' or keyword == 'elif':
-            if(random.randint(0, 9) > 2):
-                #variable
-                line += ' ' + random.choice(var_list) + ' ' + random.choice(math_comp) + ' ' + str(random.randint(0, 9))
-            else:
-                #constant
-                line += ' ' + str(random.randint(0, 9)) + ' ' + random.choice(math_comp) + ' ' + random.choice(var_list)
-
-            if(random.randint(0, 9) > 4):
-                line += ' ' + random.choice(logic_op)
-                if(random.randint(0, 9) > 2):
-                    #variable
-                    line += ' ' + random.choice(var_list) + ' ' + random.choice(math_comp) + ' ' + str(random.randint(0, 9))
-                else:
-                    #constant
-                    line += ' ' + str(random.randint(0, 9)) + ' ' + random.choice(math_comp) + ' ' + random.choice(var_list)
+            line += make_condition(var_list, math_comp, logic_op)
         line += ':\n'
         if_statements.append(line)
     return if_statements
@@ -331,7 +361,7 @@ def build_if(branch_list, var_list, math_comp, logic_op, math_op, indent, embed)
     return program
 
 
-def create_problem(num_var, branch_list, embed, math_op, math_comp, logic_op):
+def create_problem(num_var, branch_list, embed, math_op, math_comp, logic_op, loop_list):
     program = ''
     var_list = []
     val_list = []
@@ -349,16 +379,26 @@ def create_problem(num_var, branch_list, embed, math_op, math_comp, logic_op):
         init_var.append(var_list[val] + ' = ' + str(val_list[val]) + '\n')
     for line in init_var:
         program += line
+    program += 'flag = ' + str(random.randint(0, 9) + '\n')
     program += '\n'
 
+    indent = 1
+    for loop in loop_list:
+        line = ''
+        line += loop + ' '
+        loop_lines = make_loop_condition(var_list, math_comp, logic_op)
+        line += loop_lines[0]
+        line += ':\n'
+        indent += 1
+        program += line
 
-    program += build_if(branch_list, var_list, math_comp, logic_op, math_op, 1, embed)
+    program += build_if(branch_list, var_list, math_comp, logic_op, math_op, indent, embed)
 
     program += '\n'
 
     if(random.randint(0, 9) > 2):
-        program += build_if(branch_list, var_list, math_comp, logic_op, math_op, 1, False)
-
+        program += build_if(branch_list, var_list, math_comp, logic_op, math_op, indent, False)
+    program += ' '*4 + loop_lines[1]
 
     line = 'print('
     line_1 = 'result = {'
@@ -386,7 +426,7 @@ def create_problem(num_var, branch_list, embed, math_op, math_comp, logic_op):
 
 
 
-result = create_problem(random.randint(2, 5), ['if','elif', 'else'], True, ['+', '-'], ['<', '>', '==', '!='], ['and', 'or'])
+result = create_problem(random.randint(2, 5), ['if','elif', 'else'], True, ['+', '-'], ['<', '>', '==', '!='], ['and', 'or'], ['while'])
 '''
 for var, val in result:
     #print(var, val)
