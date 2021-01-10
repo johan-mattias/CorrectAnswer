@@ -269,25 +269,31 @@ logic_operations = ['AND', 'OR', 'NOT']
 
 #result = 0
 
-def create_problem(num_var, branch_list, embed, math_op, math_comp, logic_op):
-    program = ''
-    var_list = []
-    val_list = []
-    for _ in range(num_var):
-        var_list.append(random.choice(variables))
-        val_list.append(random.randint(0, 9))
+def comp_new_values(count, var_list, math_op):
+    new_values = []
+    for _ in range(count):
+        line = ''
+        line += random.choice(var_list) + ' = ' + str(random.randint(0, 9)) 
+        
+        if(random.randint(0, 9) > 4):
+            line += ' ' + random.choice(math_op) + ' ' + random.choice(var_list) + '\n'
+        else:
+            line += '\n'
+        new_values.append(line)
+    return new_values
 
-    for val in range(num_var):
-        #print(var_list[val] + ' = ' + str(val_list[val]))
-        program += var_list[val] + ' = ' + str(val_list[val]) + '\n'
-
+def filter_branch_list(branch_list):
     if 'elif' in branch_list:
         if(random.randint(0, 9) > 3):
             branch_list.remove('elif')
     if 'else' in branch_list and 'elif' not in branch_list and random.randint(0, 9) > 3:
         branch_list.remove('else')
+    return branch_list
 
-    for keyword in branch_list: 
+
+def comp_if(branch_list, var_list, math_comp, logic_op):
+    if_statements = []
+    for keyword in branch_list:
         line = ''
         line += keyword 
         if keyword == 'if' or keyword == 'elif':
@@ -306,17 +312,53 @@ def create_problem(num_var, branch_list, embed, math_op, math_comp, logic_op):
                 else:
                     #constant
                     line += ' ' + str(random.randint(0, 9)) + ' ' + random.choice(math_comp) + ' ' + random.choice(var_list)
-            
-        line += ':'
-        #print(line)
-        program += line + '\n'
-        #print('    ' + random.choice(var_list) + ' = ' + str(random.randint(0, 9)))
-        program += '    ' + random.choice(var_list) + ' = ' + str(random.randint(0, 9)) 
-        
-        if(random.randint(0, 9) > 4):
-            program += ' ' + random.choice(math_op) + ' ' + random.choice(var_list) + '\n'
+        line += ':\n'
+        if_statements.append(line)
+    return if_statements
+
+def build_if(branch_list, var_list, math_comp, logic_op, math_op, indent, embed):
+    branch_list = filter_branch_list(branch_list)
+    new_values = comp_new_values(len(branch_list), var_list, math_op)
+    if_statements = comp_if(branch_list, var_list, math_comp, logic_op)
+
+    program = ''
+    for index in range(len(branch_list)):
+        program += ' ' *4*(indent-1) + if_statements[index]
+        if(embed and random.randint(0, 9) < 2):
+            program += build_if(branch_list, var_list, math_comp, logic_op, math_op, indent+1, False)
         else:
-            program += '\n'
+            program += ' ' *4*indent +new_values[index]
+    return program
+
+
+def create_problem(num_var, branch_list, embed, math_op, math_comp, logic_op):
+    program = ''
+    var_list = []
+    val_list = []
+    
+    #create values
+    for _ in range(num_var):
+        var_list.append(random.choice(variables))
+        val_list.append(random.randint(0, 9))
+
+    # initalize varaibles (can be duplicates)
+    init_var = []
+    for val in range(num_var):
+        #print(var_list[val] + ' = ' + str(val_list[val]))
+        #program += var_list[val] + ' = ' + str(val_list[val]) + '\n'
+        init_var.append(var_list[val] + ' = ' + str(val_list[val]) + '\n')
+    for line in init_var:
+        program += line
+    program += '\n'
+
+
+    program += build_if(branch_list, var_list, math_comp, logic_op, math_op, 1, embed)
+
+    program += '\n'
+
+    if(random.randint(0, 9) > 2):
+        program += build_if(branch_list, var_list, math_comp, logic_op, math_op, 1, False)
+
 
     line = 'print('
     line_1 = 'result = {'
@@ -344,7 +386,7 @@ def create_problem(num_var, branch_list, embed, math_op, math_comp, logic_op):
 
 
 
-result = create_problem(random.randint(2, 5), ['if','elif', 'else'], False, ['+', '-'], ['<', '>', '==', '!='], ['and', 'or'])
+result = create_problem(random.randint(2, 5), ['if','elif', 'else'], True, ['+', '-'], ['<', '>', '==', '!='], ['and', 'or'])
 '''
 for var, val in result:
     #print(var, val)
