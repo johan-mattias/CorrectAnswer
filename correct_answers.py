@@ -1,264 +1,5 @@
-
-'''
-
-types of questions
-
-a) just plain variables
-
-ex1)
-temp = 5
-x = 7
-
-ex2)
-temp = 5
-x = 8 + temp
-
-temp = 5
-x = temp + 8
-
-ex3)
-score = 8
-score = score - 3
-
-score = 8
-score = 3 + score
-
-ex4)
-x = 3
-y = 4
-z = x - y
-
-ex5)
-x = 3
-y = 4
-z = x + 5
-
-ex6)
-x = 5
-y = 4 - x
-z = x + y - 3
-a = z - 3 + y - 2 + x
-
-ex7) 
-x = 5
-y = 4 - x
-z = x + y - 3
-x = z - 3 + y - 2 + x
-
-b) if one variable
-
-ex1)
-y = 4
-if y == 4:
-    y = 8
-
-ex2)
-y = 4
-if y != 4:
-    y = 8
-
-ex3)
-y = 3
-if y > 2:
-    y = 5
-
-c) if two variables
-
-ex1)
-flag = True
-x = 6
-if x > 10:
-    flag = False
-
-d) if else one variable
-
-z = 4
-if z == 2:
-    z = 8
-else:
-    z = 5
-
-e) if else two variables
-
-x = 7
-y = 3
-if x > y:
-    x = 6
-else:
-    y = 4
-
-x = 7
-y = 3
-if x == y:
-    x = 6 + y
-else:
-    y = 4 - x
-
-f) if/elif/else 2-3 variable
-
-x = 3
-y = 4
-
-if x == y:
-    y = 6
-elif x > y:
-    x = 7
-else: 
-    z = 8
-
-x = 3
-y = 4
-z = 5
-
-if x == z:
-    y = 6
-elif y < 5:
-    x = 7
-else: 
-    z = 8
-
-g) if/if embedded 1 variables
-
-x = 5
-if x > 4:
-    if x < 9:
-        x = 6
-
-h) if/if embedded 2 variable
-x = 1
-y = 2
-if x == 0:
-    if y == 2:
-        x = 3
-
-i) if/elif/if embedded 2 variables
-
-ex1)
-x = 2
-y = 3
-if x == y:
-    if x == 3:
-        x = 4
-else:
-    y = 5
-
-ex2)
-x = 2
-y = 3
-if x == y:
-    if x == 3:
-        y = 4
-else:
-    if y == 3:
-        x = 7
-
-ex3)
-x = 2
-y = 3
-if x == y:
-    if x == 3:
-        y = 4
-    else:
-        x = 2
-else:
-    if y == 3:
-        x = 7
-    else:
-        y = 7
-
-ex4)
-x = 2
-y = 3
-if x == y:
-    if x == 3:
-        y = 4
-    else:
-        x = 2
-elif x < y:
-    if y == 3:
-        y = 5
-    else:
-        x = 3
-else:
-    if y == 3:
-        x = 7
-    else:
-        y = 7
-
-ex5)
-x = 2
-y = 3
-if x == y:
-    if x == 3:
-        y = 4
-    elif x < y:
-        y = 7
-    else:
-        x = 2
-elif x < y:
-    if y == 3:
-        y = 5
-    elif x < y:
-        y = 7
-    else:
-        x = 3
-else:
-    if y == 3:
-        x = 7
-    elif x < y:
-        y = 7
-    else:
-        y = 7
-
-j) if/AND/OR 2 variables
-z = 7
-y = 2
-if z == 7 AND y == 2:
-    z = 9
-
-k) if/else/AND/OR 2 varaibles
-z = 8
-y = 2
-if z == 7 OR y == 2:
-    z = 9
-else:
-    y = 7
-
-l) if/elif/else/AND/OR embedded 3 varaiables
-
-z = 8
-y = 2
-x = 3
-if z == 7 OR y == 2:
-    if y == 3:
-        x = 7
-    elif x < y:
-        y = 7
-    else:
-        y = 7
-elif y == 2 AND z == 8:
-    if y == 3:
-        x = 7
-    elif x < y:
-        y = 7
-    else:
-        y = 7
-else:
-    if y == 3:
-        x = 7
-    elif x < y:
-        y = 7
-    else:
-        y = 7
-
-m) 
-
-
-
-'''
-
 import random
-
+import sys
 correct_answers = 0
 
 keywords =  ['if', 'for', 'while']
@@ -360,8 +101,13 @@ def build_if(branch_list, var_list, math_comp, logic_op, math_op, indent, embed)
             program += ' ' *4*indent +new_values[index]
     return program
 
-
-def create_problem(num_var, branch_list, embed, math_op, math_comp, logic_op, loop_list):
+def create_problem(num_var=random.randint(2, 5), 
+                   branch_list=['if','elif', 'else'], 
+                   embed = True, 
+                   math_op =  ['+', '-'], 
+                   math_comp = ['<', '>', '==', '!='], 
+                   logic_op =  ['and', 'or'], 
+                   loop_list = []):
     program = ''
     var_list = []
     val_list = []
@@ -379,18 +125,22 @@ def create_problem(num_var, branch_list, embed, math_op, math_comp, logic_op, lo
         init_var.append(var_list[val] + ' = ' + str(val_list[val]) + '\n')
     for line in init_var:
         program += line
-    program += 'flag = ' + str(random.randint(0, 9) + '\n')
-    program += '\n'
+
+    if loop_list != []:
+        program += 'flag = ' + str(random.randint(0, 9)) + '\n'
+        program += '\n'
 
     indent = 1
-    for loop in loop_list:
-        line = ''
-        line += loop + ' '
-        loop_lines = make_loop_condition(var_list, math_comp, logic_op)
-        line += loop_lines[0]
-        line += ':\n'
-        indent += 1
-        program += line
+    loop_lines = []
+    if loop_list != []:
+        for loop in loop_list:
+            line = ''
+            line += loop + ' '
+            loop_lines = make_loop_condition(var_list, math_comp, logic_op)
+            line += loop_lines[0]
+            line += ':\n'
+            indent += 1
+            program += line
 
     program += build_if(branch_list, var_list, math_comp, logic_op, math_op, indent, embed)
 
@@ -398,7 +148,9 @@ def create_problem(num_var, branch_list, embed, math_op, math_comp, logic_op, lo
 
     if(random.randint(0, 9) > 2):
         program += build_if(branch_list, var_list, math_comp, logic_op, math_op, indent, False)
-    program += ' '*4 + loop_lines[1]
+
+    if loop_lines != []:
+        program += ' '*4 + loop_lines[1]
 
     line = 'print('
     line_1 = 'result = {'
@@ -423,19 +175,20 @@ def create_problem(num_var, branch_list, embed, math_op, math_comp, logic_op, lo
 
     return result
 
+#num_var, branch_list, embed, math_op, math_comp, logic_op, loop_list)
 
+result = create_problem()
 
-
-result = create_problem(random.randint(2, 5), ['if','elif', 'else'], True, ['+', '-'], ['<', '>', '==', '!='], ['and', 'or'], ['while'])
-'''
 for var, val in result:
     #print(var, val)
     answer = input('what is the value of ' + var + '?\n')
+    while not answer.isnumeric():
+        answer = input('what is the value of ' + var + '?\n')
     if(int(answer) == val):
         print('correct')
     else:
         print('inncorrect (ans: ' + str(val) + ')')
-'''
+
 
 '''
 #level one just two variables
